@@ -18,47 +18,87 @@
     >
       <a-form layout="vertical">
         <a-form-item label="Title">
-          <a-input />
+          <a-input v-model="title" />
         </a-form-item>
+        <div v-if="v$.$errors.length">
+          <p class="error"  v-for="error of v$.title.$errors" :key="error.$uid">
+            {{ error.$message }}
+          </p>
+        </div>
         <a-form-item label="Description">
-          <a-input />
-        </a-form-item>
-        <a-form-item class="collection-create-form_last-form-item">
-          <a-radio-group
-            v-decorator="[
-              'modifier',
-              {
-                initialValue: 'private',
-              },
-            ]"
-          >
-            <a-radio value="public">Public</a-radio>
-            <a-radio value="private">Private</a-radio>
-          </a-radio-group>
+          <a-input v-model="description" />
         </a-form-item>
       </a-form>
+      <div  v-if="v$.$errors.length">
+        <p  class="error" v-for="error of v$.description.$errors" :key="error.$uid">
+          {{ error.$message }}
+        </p>
+      </div>
     </a-modal>
   </div>
 </template>
 
 <script>
+import useVuelidate from "@vuelidate/core";
+import { required, helpers, maxLength } from "@vuelidate/validators";
+import { mapActions } from "vuex";
 export default {
+  setup: () => ({ v$: useVuelidate() }),
   data() {
     return {
       ModalText: "Content of the modal",
       isModalVisible: false,
+      title: "",
+      description: "",
     };
   },
   methods: {
+    ...mapActions(['fetchList']),
     onOpenModal() {
       this.isModalVisible = true;
     },
-    handleSubmit() {
+    async handleSubmit() {
       //TODO:
+      const isValid = await this.v$.$validate();
+      if (isValid) {
+        await this.fetchList({name:this.title,description:this.description})
+        this.isModalVisible = false
+      }
     },
     handleCancel() {
       //TODO:
+      this.isModalVisible = false;
     },
+  },
+  validations() {
+    return {
+      title: {
+        required: helpers.withMessage("This field cannot be empty", required),
+        maxLength: helpers.withMessage(
+          "Must be equal or less than 255 characters",
+          maxLength(255)
+        ),
+      },
+      description: {
+        required: helpers.withMessage("This field cannot be empty", required),
+        maxLength: helpers.withMessage(
+          "Must be equal or less than 1000 characters",
+          maxLength(1000)
+        ),
+      },
+    };
   },
 };
 </script>
+
+<style>
+
+.error {
+ border:  1px solid red;
+ padding: 4px;
+ background-color: pink;
+ color: black;
+ border-radius: 3px;
+}
+
+</style>
