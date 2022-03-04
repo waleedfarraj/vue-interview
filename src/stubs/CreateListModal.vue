@@ -21,7 +21,7 @@
           <a-input v-model="title" />
         </a-form-item>
         <div v-if="v$.$errors.length">
-          <p class="error"  v-for="error of v$.title.$errors" :key="error.$uid">
+          <p class="error" v-for="error of v$.title.$errors" :key="error.$uid">
             {{ error.$message }}
           </p>
         </div>
@@ -29,8 +29,12 @@
           <a-input v-model="description" />
         </a-form-item>
       </a-form>
-      <div  v-if="v$.$errors.length">
-        <p  class="error" v-for="error of v$.description.$errors" :key="error.$uid">
+      <div v-if="v$.$errors.length">
+        <p
+          class="error"
+          v-for="error of v$.description.$errors"
+          :key="error.$uid"
+        >
           {{ error.$message }}
         </p>
       </div>
@@ -53,7 +57,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['fetchList']),
+    ...mapActions(["fetchList"]),
     onOpenModal() {
       this.isModalVisible = true;
     },
@@ -61,13 +65,24 @@ export default {
       //TODO:
       const isValid = await this.v$.$validate();
       if (isValid) {
-        await this.fetchList({name:this.title,description:this.description})
-        this.isModalVisible = false
+        await this.fetchList({
+          name: this.title,
+          description: this.description,
+        });
+        this.isModalVisible = false;
+        this.v$.$reset();
+        this.resetDataForm();
       }
     },
     handleCancel() {
       //TODO:
       this.isModalVisible = false;
+      this.v$.$reset();
+      this.resetDataForm();
+    },
+    resetDataForm() {
+      this.title = "";
+      this.description = "";
     },
   },
   validations() {
@@ -92,13 +107,11 @@ export default {
 </script>
 
 <style>
-
 .error {
- border:  1px solid red;
- padding: 4px;
- background-color: pink;
- color: black;
- border-radius: 3px;
+  border: 1px solid red;
+  padding: 4px;
+  background-color: pink;
+  color: black;
+  border-radius: 3px;
 }
-
 </style>

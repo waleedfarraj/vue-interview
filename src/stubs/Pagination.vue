@@ -25,7 +25,6 @@ export default {
   },
   methods:{
     updatePageNumber(){
-      console.log('x')
       this.$emit('getCurrent',this.current)
     }
   }
