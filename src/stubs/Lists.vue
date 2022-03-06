@@ -4,7 +4,7 @@
       <CreateListModal />
       <div :style="{ marginBottom: '30px' }" class="gutter-example list">
         <template v-for="item in shownCards">
-          <Card :title="item.name" :description="item.description" />
+          <Card :key="item.name" :title="item.name" :description="item.description" />
         </template>
       </div>
       <Pagination @getCurrent="(current)=> this.page = current" :total="list.length" :isDisabled="list.length < maxCardsPerPage" :pageSize="maxCardsPerPage" />
